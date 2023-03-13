@@ -1,6 +1,6 @@
 require('./settings')
-const { default: tioConnect, useSingleFileAuthState, DisconnectReason, generateForwardMessageContent, prepareWAMessageMedia, generateWAMessageFromContent, generateMessageID, downloadContentFromMessage, makeInMemoryStore, jidDecode, proto } = require("@adiwajshing/baileys")
-const { state, saveState } = useSingleFileAuthState(`./${sessionName}.json`)
+const { default: tioConnect, useSingleFileAuthState,useMultiFileAuthState, DisconnectReason, generateForwardMessageContent, prepareWAMessageMedia, generateWAMessageFromContent, generateMessageID, downloadContentFromMessage, makeInMemoryStore, jidDecode, proto } = require("@adiwajshing/baileys")
+//const { state, saveState } = useSingleFileAuthState(`./${sessionName}.json`)
 const pino = require('pino')
 const { Boom } = require('@hapi/boom')
 const fs = require('fs')
@@ -62,6 +62,7 @@ if (global.db) setInterval(async () => {
   }, 30 * 1000)
 
 async function startTio() {
+const { state, saveCreds } = await useMultiFileAuthState('sessions')
     const tio = tioConnect({
         logger: pino({ level: 'silent' }),
         printQRInTerminal: true,
@@ -333,7 +334,7 @@ startTio();
 }
 })
 
-    tio.ev.on('creds.update', saveState)
+    tio.ev.on('creds.update', saveCreds)
       tio.reSize = async (image, width, height) => {
        let jimp = require('jimp')
        var oyy = await jimp.read(image);
